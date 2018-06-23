@@ -116,8 +116,6 @@ export default class App extends Component {
 	}
 
 	render() {
-
-		console.log(this.state.markers);
 		return (
 			<div>
 				<div id={config.MAP_BOX_OPTIONS.container}></div>
