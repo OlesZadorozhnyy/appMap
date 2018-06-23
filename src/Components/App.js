@@ -86,21 +86,13 @@ export default class App extends Component {
 		const assignedOptions = Object.assign({ draggable: true, color: config.MAP_SCORES[scoreId].color }, options);
 		const markerId = (markers.length) ? markers[markers.length - 1].id + 1 : 0;
 
-		const popupBlock = document.createElement('div'); 
-		ReactDOM.render(<MarkerPopup
-			markerId={markerId}
-			onChangeScore={this.onChangeScore.bind(this)}
-			onRemoveMarker={this.onRemoveMarker.bind(this, markerId)}
-		/>, popupBlock); // convert react element to node for mapboxgl popup
-
 		const markerInstance = new mapboxgl.Marker(assignedOptions)
 			.setLngLat(lngLat)
-			.setPopup(this.createMarkerPopup(popupBlock))
+			.setPopup(this.createMarkerPopup())
 			.addTo(this.map);
 
+		markerInstance.getElement().addEventListener('click', this.onClickMarker.bind(this), false);
 		markerInstance.on('dragend', this.onDragEndMarker.bind(this, markerId));
-		const el = markerInstance.getElement();
-		el.addEventListener('click', this.onClickMarker.bind(this), false);
 
 		const elements = { id: +markerId, scoreId: +scoreId, instance: markerInstance };
 		const newMarker = GeoJsonAdapter.toFeature(lngLat, config.MAP_SCORES[scoreId].color, elements);
@@ -110,9 +102,16 @@ export default class App extends Component {
 		});
 	}
 
-	createMarkerPopup(content) {
+	createMarkerPopup() {
+		const popupBlock = document.createElement('div'); 
+		ReactDOM.render(<MarkerPopup
+			markerId={markerId}
+			onChangeScore={this.onChangeScore.bind(this)}
+			onRemoveMarker={this.onRemoveMarker.bind(this, markerId)}
+		/>, popupBlock); // convert react element to node for mapboxgl popup
+
 		return new mapboxgl.Popup()
-			.setDOMContent(content);
+			.setDOMContent(popupBlock);
 	}
 
 	render() {
