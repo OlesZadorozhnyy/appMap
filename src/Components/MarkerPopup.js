@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import config from '../config';
+import mapConfig from '../mapConfig';
 
 export default class MarkerPopup extends Component {
 
@@ -10,11 +10,13 @@ export default class MarkerPopup extends Component {
 	renderScoreButtons() {
 		let list = [];
 
-		for (let scoreId in config.MAP_SCORES) {
+		const mapScores = mapConfig.MAP_SCORES;
+
+		for (let scoreId in mapScores) {
 			const attributes = {
 				onClick: this.props.onChangeScore.bind(this, this.props.markerId, scoreId),
 				style: {
-					background: config.MAP_SCORES[scoreId].color,
+					background: mapScores[scoreId].color,
 					color: '#fff',
 					fontWeight: 'bold'
 				}

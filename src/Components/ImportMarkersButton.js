@@ -24,14 +24,21 @@ export default class ImportMarkersButton extends Component {
 	}
 
 	onLoadFileHandler(e) {
-		const content = JSON.parse(e.target.result);
-
+		const content = this.parseJSON(e.target.result);
 		const markers = GeoJsonAdapter.getFeatures(content);
 
 		markers.map((marker) => {
 			const lngLat = marker.geometry.coordinates;
 			this.props.createMarker(lngLat, marker.scoreId);
 		});
+	}
+
+	parseJSON(data) {
+		try {
+			return JSON.parse(data);
+		} catch(e) {
+			alert('Incorrect JSON.');
+		}
 	}
 
 	render() {

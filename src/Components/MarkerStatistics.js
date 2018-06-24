@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import config from '../config';
+import mapConfig from '../mapConfig';
 
 export default class MarkerStatistics extends Component {
 
@@ -15,8 +15,10 @@ export default class MarkerStatistics extends Component {
 	renderStatisticItems() {
 		let list = [];
 
-		for (let scoreId in config.MAP_SCORES) {
-			const title = config.MAP_SCORES[scoreId].title;
+		const mapScores = mapConfig.MAP_SCORES;
+
+		for (let scoreId in mapScores) {
+			const title = mapScores[scoreId].title;
 			const markersCountByScoreId = this.props.markers.filter(marker => marker.scoreId === +scoreId).length;
 
 			list.unshift(this.itemText(title, markersCountByScoreId));

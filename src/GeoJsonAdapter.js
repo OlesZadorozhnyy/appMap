@@ -35,7 +35,7 @@ export default class GeoJsonAdapter {
 		};
 	}
 
-	static getFeatures(data) {
+	static getFeatures(data = {}) {
 		return data.features || [];
 	}
 }

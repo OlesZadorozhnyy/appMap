@@ -6,7 +6,8 @@ import MarkerPopup from './MarkerPopup';
 import MarkerStatistics from './MarkerStatistics';
 import ImportMarkersButton from './ImportMarkersButton';
 import ExportMarkersButton from './ExportMarkersButton';
-import config from '../config';
+import mainConfig from '../mainConfig';
+import mapConfig from '../mapConfig';
 
 import '../Styles/App.css';
 
@@ -24,9 +25,9 @@ export default class App extends Component {
 	}
 
 	componentDidMount() {
-		mapboxgl.accessToken = config.MAP_BOX_TOKEN;
+		mapboxgl.accessToken = mainConfig.MAP_BOX_TOKEN;
 
-		this.map = new mapboxgl.Map(config.MAP_BOX_OPTIONS);
+		this.map = new mapboxgl.Map(mapConfig.MAP_BOX_OPTIONS);
 		this.map.on('click', this.onClickMap.bind(this));
 	}
 
@@ -81,28 +82,31 @@ export default class App extends Component {
 		});
 	}
 
-	createMarker(lngLat, scoreId = config.DEFAULT_MAP_SCORE, options = {}) {
+	createMarker(lngLat, scoreId = mapConfig.DEFAULT_MAP_SCORE, options = {}) {
 		const { markers } = this.state;
-		const assignedOptions = Object.assign({ draggable: true, color: config.MAP_SCORES[scoreId].color }, options);
+
 		const markerId = (markers.length) ? markers[markers.length - 1].id + 1 : 0;
+		const color = mapConfig.MAP_SCORES[scoreId].color;
+
+		const assignedOptions = Object.assign({ draggable: true, color: color }, options);
 
 		const markerInstance = new mapboxgl.Marker(assignedOptions)
 			.setLngLat(lngLat)
-			.setPopup(this.createMarkerPopup())
+			.setPopup(this.createMarkerPopup(markerId))
 			.addTo(this.map);
 
 		markerInstance.getElement().addEventListener('click', this.onClickMarker.bind(this), false);
 		markerInstance.on('dragend', this.onDragEndMarker.bind(this, markerId));
 
 		const elements = { id: +markerId, scoreId: +scoreId, instance: markerInstance };
-		const newMarker = GeoJsonAdapter.toFeature(lngLat, config.MAP_SCORES[scoreId].color, elements);
+		const newMarker = GeoJsonAdapter.toFeature(lngLat, color, elements);
 
 		this.setState((prevState) => {
 			return { markers: prevState.markers.concat([newMarker])};
 		});
 	}
 
-	createMarkerPopup() {
+	createMarkerPopup(markerId) {
 		const popupBlock = document.createElement('div'); 
 		ReactDOM.render(<MarkerPopup
 			markerId={markerId}
@@ -117,7 +121,7 @@ export default class App extends Component {
 	render() {
 		return (
 			<div>
-				<div id={config.MAP_BOX_OPTIONS.container}></div>
+				<div id={mapConfig.MAP_BOX_OPTIONS.container}></div>
 
 				<div className="content">
 					<MarkerStatistics markers={this.state.markers} />
